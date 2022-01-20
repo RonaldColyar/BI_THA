@@ -43,7 +43,7 @@ pub async fn clean_up_room_if_empty(room_id: &usize, state: &State) {
     }
 }
 
-pub async fn remove_user_from_room_transcripts(room_id: usize, user_id: usize, state: &State) {
+pub async fn remove_user_from_room_transcripts(room_id: &usize, user_id: &usize, state: &State) {
     println!("removing user from room transcripts: {}", room_id);
 
     //helps with the case of lingering users
@@ -51,13 +51,13 @@ pub async fn remove_user_from_room_transcripts(room_id: usize, user_id: usize, s
         .write()
         .await
         .room_transcripts
-        .get_mut(&room_id)
+        .get_mut(room_id)
         .unwrap()
         .messages
-        .remove(&user_id);
+        .remove(user_id);
 }
 
-pub async fn remove_user_from_room(room_id: usize, user_id: usize, state: &State) {
+pub async fn remove_user_from_room(room_id: &usize, user_id: &usize, state: &State) {
     println!("removing user from room {}", room_id);
     state
         .write()

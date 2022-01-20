@@ -68,12 +68,11 @@ async fn handle_user_connection(ws: WebSocket, state: State, room_id: usize) {
     users::add_user_to_state(&my_id, &state, tx).await;
     rooms::add_user_to_room(&my_id, &room_id, &state).await;
 
-    block_and_listen_for_incoming_messages(&mut user_ws_rx, my_id.clone(), room_id.clone(), &state)
-        .await;
-    handle_user_disconnection(my_id, room_id, state).await;
+    block_and_listen_for_incoming_messages(&mut user_ws_rx, &my_id, &room_id, &state).await;
+    handle_user_disconnection(&my_id, &room_id, state).await;
 }
 
-async fn handle_user_message(my_id: usize, room_id: usize, msg: Message, state: &State) {
+async fn handle_user_message(my_id: &usize, room_id: &usize, msg: Message, state: &State) {
     // Skip any non-Text messages...
     let msg = if let Ok(s) = msg.to_str() {
         s
@@ -108,8 +107,8 @@ async fn handle_user_message(my_id: usize, room_id: usize, msg: Message, state: 
 
 async fn block_and_listen_for_incoming_messages(
     user_ws_rx: &mut SplitStream<WebSocket>,
-    my_id: usize,
-    room_id: usize,
+    my_id: &usize,
+    room_id: &usize,
     state: &State,
 ) {
     while let Some(result) = user_ws_rx.next().await {
@@ -120,7 +119,7 @@ async fn block_and_listen_for_incoming_messages(
                 break;
             }
         };
-        handle_user_message(my_id.clone(), room_id, msg, state).await;
+        handle_user_message(my_id, room_id, msg, state).await;
     }
 }
 
@@ -140,10 +139,10 @@ fn spawn_task_to_listen_for_outgoing_messages(
     });
 }
 
-async fn handle_user_disconnection(my_id: usize, room_id: usize, state: State) {
+async fn handle_user_disconnection(my_id: &usize, room_id: &usize, state: State) {
     println!("disconnecting user id :{}", my_id);
-    users::remove_user_from_state(&my_id, &state).await;
-    rooms::remove_user_from_room_transcripts(room_id.clone(), my_id.clone(), &state).await;
+    users::remove_user_from_state(my_id, &state).await;
+    rooms::remove_user_from_room_transcripts(room_id, my_id, &state).await;
     rooms::remove_user_from_room(room_id, my_id, &state).await;
-    rooms::clean_up_room_if_empty(&room_id, &state).await;
+    rooms::clean_up_room_if_empty(room_id, &state).await;
 }
