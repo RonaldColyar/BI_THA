@@ -34,7 +34,7 @@ Each room owns ONE transcript file and each transcript file is JSON serialized i
 Data is transfered from memory to local storage, to keep the host server resources free.
 
 ## Why the 30 second interval for the transcriptor?
-I wanted to have a periodic update on messages to avoid updating too often and not so much. Scalability is very important in a system such as this one, where the number of users aren't constant.
+I wanted to have a periodic update on messages to avoid updating too often and not so much. Scalability is very important in a system such as this one, where the number of users are unknown.
 
 ## Test Coverage
 This server has very low test coverage due to its nature.
