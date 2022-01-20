@@ -57,6 +57,11 @@ pub async fn remove_user_from_room_transcripts(room_id: usize, user_id: usize, s
         .remove(&user_id);
 }
 
+pub async fn remove_user_from_room(room_id:usize, user_id:usize, state: &State){
+    println!("removing user from room {}", room_id);
+    state.write().await.rooms.get_mut(&room_id).unwrap().user_ids.remove(&user_id);
+}
+
 pub async fn create_room_if_not_present(room_id: &usize, state: &State) {
     if state.read().await.rooms.get(room_id).is_none() {
         println!("Starting Room {}", room_id);

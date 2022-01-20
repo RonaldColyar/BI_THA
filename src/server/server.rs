@@ -143,8 +143,7 @@ fn spawn_task_to_listen_for_outgoing_messages(
 async fn handle_user_disconnection(my_id: usize, room_id: usize, state: State) {
     println!("disconnecting user id :{}", my_id);
     users::remove_user_from_state(&my_id, &state).await;
+    rooms::remove_user_from_room_transcripts(room_id.clone(), my_id.clone(), &state).await;
+    rooms::remove_user_from_room(room_id, my_id, &state).await;
     rooms::clean_up_room_if_empty(&room_id, &state).await;
-    rooms::remove_user_from_room_transcripts(room_id, my_id, &state).await;
-    state.write().await.peer_map.remove(&my_id);
-    state.write().await.active_users.remove(&my_id);
 }
