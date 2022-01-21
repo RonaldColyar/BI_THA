@@ -35,7 +35,7 @@ pub async fn start() {
     //global state filter for warp
     let state = warp::any().map(move || state.clone());
 
-    // GET /chat/:roomId -> websocket upgrade
+    // GET /api/chat-room
     let chat = warp::path!("api" / "chat-room" / usize)
         // The `ws()` filter will prepare Websocket handshake...
         .and(warp::ws())
@@ -44,7 +44,8 @@ pub async fn start() {
             // This will call our function if the handshake succeeds.
             ws.on_upgrade(move |socket| handle_user_connection(socket, state.clone(), room_id))
         });
-
+    
+    //GET /chat/:roomId
     let base_path = warp::path!("chat" / usize)
         .map(|room_id: usize| warp::reply::html(html::format_html(room_id)));
 
